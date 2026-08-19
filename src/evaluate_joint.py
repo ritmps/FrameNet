@@ -13,7 +13,7 @@ import numpy as np
 from tensorboardX import SummaryWriter
 import argparse
 import skimage.io as sio
-import scipy.misc as misc
+import misc_compat as misc
 num_epochs = 10000
 batch_size = 1
 

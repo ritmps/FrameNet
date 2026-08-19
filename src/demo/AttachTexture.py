@@ -4,7 +4,7 @@ import sys
 import numpy as np
 from visualizer import app
 from direction import *
-import scipy.misc as misc
+import misc_compat as misc
 import argparse
 
 parser = argparse.ArgumentParser(description='Process saome integers.')

@@ -8,7 +8,7 @@ import skimage.io as sio
 import skimage.transform as tr
 import pickle
 import numpy as np
-import scipy.misc as misc
+import misc_compat as misc
 import os
 
 

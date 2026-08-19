@@ -1,7 +1,7 @@
 import numpy as np
 from ctypes import *
 import cv2
-import scipy.misc as misc
+import misc_compat as misc
 #dirlib = cdll.LoadLibrary('./cpp/build/libDirection.dylib')
 dirlib = cdll.LoadLibrary('./cpp/build/libDirection.so')
 
