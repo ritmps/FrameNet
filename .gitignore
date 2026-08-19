@@ -145,3 +145,4 @@ src/Render/libRender.so
 # Script-generated visualization outputs
 src/color.png
 src/vis.png
+src/out/
