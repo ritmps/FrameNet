@@ -7,7 +7,6 @@ from torchvision import transforms
 from torch.utils.data.dataset import Dataset  # For custom datasets
 from torch.utils.data import DataLoader 
 
-from model import UNet, UNet_2
 from dorn import DORN
 from dataset import AffineDataset, AffineTestsDataset
 import numpy as np
@@ -27,5 +26,5 @@ labels = np.transpose(sample_batched['label'].numpy(), (1, 2, 0))
 Qx = np.ascontiguousarray(labels[:,:,0:2].astype('float32'))
 Qy = np.ascontiguousarray(labels[:,:,2:4].astype('float32'))
 
-sio.imsave('color.png', color)
+sio.imsave('color.png', (color * 255).clip(0, 255).astype('uint8'))
 render.visualizeDirection('vis.png', color, Qx, Qy)

@@ -7,7 +7,7 @@ void VisualizeDirection(const char* output_file, float* color, cv::Point2f* Qx, 
 	cv::Mat final(height, width, CV_32FC3);
 	memcpy(final.data, color, sizeof(float) * 3 * height * width);
 	final.convertTo(final, CV_8UC3, 255);
-	cv::cvtColor(final, final, CV_RGB2BGR);
+	cv::cvtColor(final, final, cv::COLOR_RGB2BGR);
 
 	for (int i = 0; i < 300; ++i) {
 		int px = rand() % width;

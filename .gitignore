@@ -129,3 +129,19 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Downloaded/pretrained model checkpoints
+src/checkpoints/*
+!src/checkpoints/download.sh
+
+# Downloaded datasets
+src/data/*
+!src/data/download.sh
+
+# Compiled render library
+*.o
+src/Render/libRender.so
+
+# Script-generated visualization outputs
+src/color.png
+src/vis.png
