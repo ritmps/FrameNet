@@ -1,7 +1,8 @@
 from ctypes import *
+import os
 
 import numpy as np
-Render = cdll.LoadLibrary('./Render/libRender.so')
+Render = cdll.LoadLibrary(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'libRender.so'))
 
 def setup(info):
 	Render.InitializeCamera(info['depthWidth'], info['depthHeight'],

@@ -12,6 +12,8 @@ dependencies = [
     "opencv-python>=4.9",
     "tensorboardx>=2.6",
     "pillow>=10.0",
+    "pyzmq>=26.0.0",
+    "wolframclient>=1.4.0",
 ]
 
 [tool.uv]

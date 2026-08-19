@@ -13,41 +13,8 @@ import os
 
 import numpy as np
 import skimage.io as sio
-import torch
 
-import misc_compat as misc
-from dorn import DORN
-
-INPUT_SIZE = (240, 320)  # (height, width), matches training resolution
-
-
-def build_input(image_path, intrinsics):
-    fx, cx, fy, cy = intrinsics
-    color_img = misc.imresize(sio.imread(image_path)[:, :, :3], INPUT_SIZE + (3,), 'nearest')
-    color_tensor = np.transpose(color_img.astype('float32') / 255.0, (2, 0, 1))
-
-    h, w = INPUT_SIZE
-    xx, yy = np.meshgrid(np.arange(w), np.arange(h))
-    mesh_x = ((xx - cx) / fx).astype('float32')
-    mesh_y = ((yy - cy) / fy).astype('float32')
-
-    input_tensor = np.zeros((5, h, w), dtype='float32')
-    input_tensor[0:3] = color_tensor
-    input_tensor[3] = mesh_x
-    input_tensor[4] = mesh_y
-    return torch.from_numpy(input_tensor).unsqueeze(0), color_img
-
-
-def normalize(vec):
-    # vec: (3, H, W)
-    length = np.sqrt((vec ** 2).sum(axis=0, keepdims=True)) + 1e-9
-    return vec / length
-
-
-def vector_to_rgb(vec):
-    # map unit vector components from [-1, 1] to [0, 255]
-    img = np.transpose(vec, (1, 2, 0))
-    return ((img * 0.5 + 0.5) * 255).clip(0, 255).astype('uint8')
+from framenet_core import DEFAULT_INTRINSICS, predict, vector_to_rgb
 
 
 def main():
@@ -55,41 +22,26 @@ def main():
     parser.add_argument('--image', required=True, help='Path to an input RGB image')
     parser.add_argument('--checkpoint', default='checkpoints/dorn.cpkt')
     parser.add_argument('--out', default='out')
-    parser.add_argument('--intrinsics', type=float, nargs=4, default=[577.591, 318.905, 578.73, 242.684],
+    parser.add_argument('--intrinsics', type=float, nargs=4, default=list(DEFAULT_INTRINSICS),
                          metavar=('FX', 'CX', 'FY', 'CY'))
-    parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', choices=['cpu', 'cuda'])
+    parser.add_argument('--device', default=None, choices=['cpu', 'cuda'])
     args = parser.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
 
-    device = torch.device(args.device)
+    result = predict(args.image, args.checkpoint, args.intrinsics, args.device)
 
-    cnn = DORN(channel=5, output_channel=13, pretrained=False)
-    cnn.load_state_dict(torch.load(args.checkpoint, map_location=device))
-    cnn = cnn.to(device).eval()
-
-    input_tensor, color_img = build_input(args.image, args.intrinsics)
-    input_tensor = input_tensor.to(device)
-
-    with torch.no_grad():
-        outputs = cnn(input_tensor)[0].cpu().numpy()
-
-    projection = outputs[0:4]      # 2D projected tangent field (Qx, Qy)
-    tangent_x = normalize(outputs[4:7])   # 3D principal direction #1
-    tangent_y = normalize(outputs[7:10])  # 3D principal direction #2
-    normal = normalize(outputs[10:13])    # surface normal
-
+    color_img = (result['input'] * 255).clip(0, 255).astype('uint8')
     sio.imsave(os.path.join(args.out, 'input.png'), color_img)
-    sio.imsave(os.path.join(args.out, 'normal.png'), vector_to_rgb(normal))
-    sio.imsave(os.path.join(args.out, 'tangent_x.png'), vector_to_rgb(tangent_x))
-    sio.imsave(os.path.join(args.out, 'tangent_y.png'), vector_to_rgb(tangent_y))
+    sio.imsave(os.path.join(args.out, 'normal.png'), vector_to_rgb(np.transpose(result['normal'], (2, 0, 1))))
+    sio.imsave(os.path.join(args.out, 'tangent_x.png'), vector_to_rgb(np.transpose(result['tangent_x'], (2, 0, 1))))
+    sio.imsave(os.path.join(args.out, 'tangent_y.png'), vector_to_rgb(np.transpose(result['tangent_y'], (2, 0, 1))))
 
-    Qx = np.ascontiguousarray(np.transpose(projection[0:2], (1, 2, 0)).astype('float32'))
-    Qy = np.ascontiguousarray(np.transpose(projection[2:4], (1, 2, 0)).astype('float32'))
-    color_float = np.ascontiguousarray(color_img.astype('float32') / 255.0)
+    Qx = np.ascontiguousarray(result['projection'][:, :, 0:2].astype('float32'))
+    Qy = np.ascontiguousarray(result['projection'][:, :, 2:4].astype('float32'))
 
     import Render.render as render
-    render.visualizeDirection(os.path.join(args.out, 'tangent_field.png'), color_float, Qx, Qy)
+    render.visualizeDirection(os.path.join(args.out, 'tangent_field.png'), result['input'].astype('float32'), Qx, Qy)
 
     print('Wrote input.png, normal.png, tangent_x.png, tangent_y.png, tangent_field.png to', args.out)
 

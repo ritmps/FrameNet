@@ -1,0 +1,90 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["FrameNet", "GuideTitle",ExpressionUUID->"a1111111-1111-4111-8111-111111111111"],
+
+Cell["\<\
+Learning Local Canonical Frames of 3D Surfaces from a Single RGB Image, \
+powered by PyTorch (DORN) and the Wolfram Language.\
+\>", "GuideAbstract",ExpressionUUID->"a2222222-2222-4222-8222-222222222222"],
+
+Cell["Prediction", "GuideFunctionsSubsection",ExpressionUUID->"a3333333-3333-4333-8333-333333333333"],
+
+Cell[TextData[{
+ Cell[BoxData[
+ "FrameNetPredict"], "InlineFormula",ExpressionUUID->
+  "a4444444-4444-4444-8444-444444444444"],
+ " \[LongDash] run the DORN checkpoint on an image and return the predicted \
+surface normal, 3D tangent directions, and 2D projected tangent field"
+}], "GuideText",ExpressionUUID->"a5555555-5555-4555-8555-555555555555"],
+
+Cell[TextData[{
+ Cell[BoxData[
+ "FrameNetTangentField"], "InlineFormula",ExpressionUUID->
+  "a6666666-6666-4666-8666-666666666666"],
+ " \[LongDash] render the predicted projected tangent field as a \
+streamline-overlay Image"
+}], "GuideText",ExpressionUUID->"a7777777-7777-4777-8777-777777777777"],
+
+Cell["Diagnostics & Hardware Verification", "GuideFunctionsSubsection",ExpressionUUID->"a8888888-8888-4888-8888-888888888888"],
+
+Cell[TextData[{
+ Cell[BoxData[
+ "FrameNetDoctor"], "InlineFormula",ExpressionUUID->
+  "a9999999-9999-4999-8999-999999999999"],
+ " \[LongDash] run diagnostic health checks on Python, PyTorch, the \
+checkpoint, and CUDA device availability"
+}], "GuideText",ExpressionUUID->"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"],
+
+Cell[TextData[{
+ Cell[BoxData[
+ "FrameNetInfo"], "InlineFormula",ExpressionUUID->
+  "abbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"],
+ " \[LongDash] retrieve PyTorch session metadata, device info, and supported \
+layers"
+}], "GuideText",ExpressionUUID->"accccccc-cccc-4ccc-8ccc-cccccccccccc"],
+
+Cell["Session Management & Configuration", "GuideFunctionsSubsection",ExpressionUUID->"addddddd-dddd-4ddd-8ddd-dddddddddddd"],
+
+Cell[TextData[{
+ Cell[BoxData[
+ "StartFrameNetSession"], "InlineFormula",ExpressionUUID->
+  "aeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee"],
+ " \[LongDash] start an explicit Python external session with \
+framenet_bridge"
+}], "GuideText",ExpressionUUID->"afffffff-ffff-4fff-8fff-ffffffffffff"],
+
+Cell[TextData[{
+ Cell[BoxData[
+ "StopFrameNetSession"], "InlineFormula",ExpressionUUID->
+  "b1111111-1111-4111-8111-111111111111"],
+ " \[LongDash] terminate the default or specified Python external session"
+}], "GuideText",ExpressionUUID->"b2222222-2222-4222-8222-222222222222"],
+
+Cell[TextData[{
+ Cell[BoxData[
+ "$FrameNetPython"], "InlineFormula",ExpressionUUID->
+  "b3333333-3333-4333-8333-333333333333"],
+ " \[LongDash] override the path to the Python executable"
+}], "GuideText",ExpressionUUID->"b4444444-4444-4444-8444-444444444444"],
+
+Cell[TextData[{
+ Cell[BoxData[
+ "$DefaultFrameNetSession"], "InlineFormula",ExpressionUUID->
+  "b5555555-5555-4555-8555-555555555555"],
+ " \[LongDash] global variable holding the active automatic background \
+session"
+}], "GuideText",ExpressionUUID->"b6666666-6666-4666-8666-666666666666"]
+},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (July 2, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "Reference.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"b7777777-7777-4777-8777-777777777777"
+]
+(* End of Notebook Content *)

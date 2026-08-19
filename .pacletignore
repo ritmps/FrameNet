@@ -1,0 +1,11 @@
+.git
+.venv
+.vscode
+__pycache__
+*.nb
+*.paclet
+*.log
+.DS_Store
+src/data
+src/out
+src/checkpoints/dorn.cpkt
