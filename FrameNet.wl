@@ -12,6 +12,8 @@ FrameNetPredict::usage = "FrameNetPredict[image, opts] runs the DORN checkpoint 
 
 FrameNetTangentField::usage = "FrameNetTangentField[image, opts] renders the projected tangent-field streamline overlay for image and returns it as an Image.";
 
+FrameNetExportEXR::usage = "FrameNetExportEXR[image, path, opts] runs the DORN checkpoint on image and writes the input plus predicted Normal/TangentX/TangentY/Projection layers to a multi-layer EXR file at path. Returns path.";
+
 FrameNetDoctor::usage = "FrameNetDoctor[] runs diagnostic checks on the Python environment, PyTorch, bridge script, checkpoint, and device availability.";
 
 $DefaultFrameNetSession::usage = "$DefaultFrameNetSession holds the automatically managed background Python session.";
@@ -22,6 +24,7 @@ Begin["`Private`"];
 
 Options[FrameNetPredict] = {"Checkpoint" -> Automatic, "Intrinsics" -> Automatic, "Device" -> Automatic};
 Options[FrameNetTangentField] = Options[FrameNetPredict];
+Options[FrameNetExportEXR] = Options[FrameNetPredict];
 
 $DefaultFrameNetSession = None;
 If[!ValueQ[$FrameNetPython], $FrameNetPython = None];
@@ -246,6 +249,24 @@ FrameNetTangentField[session_ExternalSessionObject, image_Image, opts : OptionsP
 
 FrameNetTangentField[image_Image, opts : OptionsPattern[]] :=
     FrameNetTangentField[ensureSession[], image, opts];
+
+(* EXR Export - Explicit Session *)
+
+FrameNetExportEXR[session_ExternalSessionObject, image_Image, path_String, opts : OptionsPattern[]] :=
+    withTemporaryImageFile[image,
+        Function[{file, dir},
+            ExternalEvaluate[session, <|"Command" -> "framenet_predict_exr", "Arguments" -> {
+                file,
+                resolveCheckpoint[OptionValue["Checkpoint"]],
+                path,
+                resolveIntrinsics[OptionValue["Intrinsics"]],
+                resolveDevice[OptionValue["Device"]]
+            }|>]
+        ]
+    ];
+
+FrameNetExportEXR[image_Image, path_String, opts : OptionsPattern[]] :=
+    FrameNetExportEXR[ensureSession[], image, path, opts];
 
 (* Diagnostic Doctor *)
 

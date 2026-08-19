@@ -110,3 +110,35 @@ def render_tangent_field(image_path, checkpoint, out_path, intrinsics=DEFAULT_IN
     Qy = np.ascontiguousarray(result['projection'][:, :, 2:4].astype('float32'))
     render.visualizeDirection(out_path, result['input'].astype('float32'), Qx, Qy)
     return out_path
+
+
+def write_exr(result, out_path):
+    """Write a predict() result to a multi-layer EXR: RGB input plus the
+    normal/tangent_x/tangent_y/projection layers as named sub-channels
+    (e.g. "normal.X"), so downstream tools (e.g. the PerceptualMetrics
+    Mathematica glue) can read each layer independently."""
+    import OpenEXR
+
+    def split(name, arr):
+        return {f'{name}.{c}': np.ascontiguousarray(arr[:, :, i])
+                for i, c in enumerate(('X', 'Y', 'Z', 'W')[:arr.shape[2]])}
+
+    channels = {}
+    input_img = result['input']
+    channels['R'] = np.ascontiguousarray(input_img[:, :, 0])
+    channels['G'] = np.ascontiguousarray(input_img[:, :, 1])
+    channels['B'] = np.ascontiguousarray(input_img[:, :, 2])
+    channels.update(split('normal', result['normal']))
+    channels.update(split('tangentX', result['tangent_x']))
+    channels.update(split('tangentY', result['tangent_y']))
+    channels.update(split('projection', result['projection']))
+
+    f = OpenEXR.File({}, channels)
+    f.write(out_path)
+    return out_path
+
+
+def predict_exr(image_path, checkpoint, out_path, intrinsics=DEFAULT_INTRINSICS, device=None):
+    """Run predict() and write the result as a multi-layer EXR to out_path."""
+    result = predict(image_path, checkpoint, intrinsics, device)
+    return write_exr(result, out_path)

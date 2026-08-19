@@ -37,3 +37,9 @@ def framenet_render_tangent_field(image_path, checkpoint, out_path, intrinsics=N
     """Run inference and write the projected tangent-field overlay PNG to out_path; returns out_path."""
     intr = tuple(intrinsics) if intrinsics else framenet_core.DEFAULT_INTRINSICS
     return framenet_core.render_tangent_field(image_path, checkpoint, out_path, intr, device)
+
+
+def framenet_predict_exr(image_path, checkpoint, out_path, intrinsics=None, device=None):
+    """Run inference and write the result as a multi-layer EXR to out_path; returns out_path."""
+    intr = tuple(intrinsics) if intrinsics else framenet_core.DEFAULT_INTRINSICS
+    return framenet_core.predict_exr(image_path, checkpoint, out_path, intr, device)
